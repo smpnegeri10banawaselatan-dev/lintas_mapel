@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Millionaire PKN SMP</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .host-name {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .game-area {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            align-items: flex-start;
+        }
+
+        .main-panel {
+            flex: 2;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .money-ladder {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .money-ladder h3 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .money-level {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .money-level.current {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .money-level.completed {
+            background: rgba(34, 197, 94, 0.3);
+            border: 1px solid #22c55e;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-message {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        .question-number {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .answer-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-align: left;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .answer-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
+
+        .answer-button.selected {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            border-color: #ffd700;
+            font-weight: bold;
+        }
+
+        .answer-button.correct {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border-color: #22c55e;
+            color: white;
+        }
+
+        .answer-button.wrong {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .final-answer-button {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .final-answer-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .final-answer-button.show {
+            display: inline-block;
+        }
+
+        .game-over {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .game-over.show {
+            display: block;
+        }
+
+        .final-score {
+            font-size: 2rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .restart-button {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .lifelines {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .lifeline-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .lifeline-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .lifeline-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .money-ladder {
+                order: -1;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <main class="container">
+   <header class="header">
+    <h1 class="title" id="quiz-title">Kuis Millionaire PKN SMP</h1>
+    <p class="subtitle" id="welcome-message">Selamat datang di kuis millionaire!</p>
+    <p class="host-name">Host: <span id="host-name">Host Kuis</span></p>
+   </header>
+   <div class="game-area">
+    <div class="main-panel">
+     <div class="start-screen" id="start-screen">
+      <div class="welcome-message">
+       <p>🎯 Jawab 50 pertanyaan PKN untuk menjadi millionaire!</p>
+       <p>💡 Gunakan bantuan jika diperlukan</p>
+       <p>🏆 Raih hadiah tertinggi!</p>
+      </div><button class="start-button" onclick="startGame()">MULAI KUIS</button>
+     </div>
+     <div class="question-container" id="question-container">
+      <div class="lifelines"><button class="lifeline-button" id="fifty-fifty" onclick="useFiftyFifty()">50:50</button> <button class="lifeline-button" id="audience-poll" onclick="useAudiencePoll()">Polling Penonton</button> <button class="lifeline-button" id="phone-friend" onclick="usePhoneFriend()">Telepon Teman</button>
+      </div>
+      <div class="question-number" id="question-number">
+       Pertanyaan 1 dari 50
+      </div>
+      <div class="question-text" id="question-text"></div>
+      <div class="answers-grid" id="answers-grid"><button class="answer-button" onclick="selectAnswer(0)"> <span>A: </span><span id="answer-0"></span> </button> <button class="answer-button" onclick="selectAnswer(1)"> <span>B: </span><span id="answer-1"></span> </button> <button class="answer-button" onclick="selectAnswer(2)"> <span>C: </span><span id="answer-2"></span> </button> <button class="answer-button" onclick="selectAnswer(3)"> <span>D: </span><span id="answer-3"></span> </button>
+      </div>
+      <div class="controls"><button class="final-answer-button" id="final-answer" onclick="submitAnswer()"> JAWABAN FINAL </button>
+      </div>
+     </div>
+     <div class="game-over" id="game-over">
+      <h2>Permainan Selesai!</h2>
+      <div class="final-score" id="final-score">
+       Rp 0
+      </div>
+      <p id="final-message"></p><button class="restart-button" onclick="restartGame()">MAIN LAGI</button>
+     </div>
+    </div>
+    <aside class="money-ladder">
+     <h3>💰 Tangga Uang</h3>
+     <div id="money-levels"></div>
+    </aside>
+   </div>
+  </main>
+  <script>
+        // Konfigurasi default
+        const defaultConfig = {
+            quiz_title: "Kuis Millionaire PKN SMP",
+            host_name: "Host Kuis",
+            welcome_message: "Selamat datang di kuis millionaire!"
+        };
+
+        // Data soal PKN SMP (50 soal)
+        const questions = [
+            {
+                question: "Apa kepanjangan dari PKN?",
+                answers: ["Pendidikan Kewarganegaraan", "Pendidikan Kebangsaan Nasional", "Pendidikan Karakter Nasional", "Pendidikan Kehidupan Negara"],
+                correct: 0
+            },
+            {
+                question: "Siapa yang memproklamasikan kemerdekaan Indonesia?",
+                answers: ["Soekarno dan Hatta", "Soekarno dan Sjahrir", "Hatta dan Sjahrir", "Soekarno dan Soeharto"],
+                correct: 0
+            },
+            {
+                question: "Kapan Indonesia merdeka?",
+                answers: ["17 Agustus 1945", "17 Agustus 1944", "18 Agustus 1945", "16 Agustus 1945"],
+                correct: 0
+            },
+            {
+                question: "Apa dasar negara Indonesia?",
+                answers: ["Pancasila", "UUD 1945", "Bhinneka Tunggal Ika", "NKRI"],
+                correct: 0
+            },
+            {
+                question: "Berapa jumlah sila dalam Pancasila?",
+                answers: ["5", "4", "6", "7"],
+                correct: 0
+            },
+            {
+                question: "Sila pertama Pancasila adalah?",
+                answers: ["Ketuhanan Yang Maha Esa", "Kemanusiaan yang Adil dan Beradab", "Persatuan Indonesia", "Kerakyatan"],
+                correct: 0
+            },
+            {
+                question: "Lambang sila pertama Pancasila adalah?",
+                answers: ["Bintang", "Rantai", "Pohon Beringin", "Kepala Banteng"],
+                correct: 0
+            },
+            {
+                question: "UUD 1945 disahkan pada tanggal?",
+                answers: ["18 Agustus 1945", "17 Agustus 1945", "19 Agustus 1945", "20 Agustus 1945"],
+                correct: 0
+            },
+            {
+                question: "Siapa presiden pertama Indonesia?",
+                answers: ["Ir. Soekarno", "Mohammad Hatta", "Soeharto", "B.J. Habibie"],
+                correct: 0
+            },
+            {
+                question: "Siapa wakil presiden pertama Indonesia?",
+                answers: ["Mohammad Hatta", "Ir. Soekarno", "Soeharto", "Adam Malik"],
+                correct: 0
+            },
+            {
+                question: "Apa semboyan negara Indonesia?",
+                answers: ["Bhinneka Tunggal Ika", "Pancasila", "NKRI", "Garuda Pancasila"],
+                correct: 0
+            },
+            {
+                question: "Bhinneka Tunggal Ika artinya?",
+                answers: ["Berbeda-beda tetapi tetap satu", "Satu untuk semua", "Bersatu kita teguh", "Gotong royong"],
+                correct: 0
+            },
+            {
+                question: "Burung Garuda melambangkan?",
+                answers: ["Kekuatan dan keagungan", "Kecepatan", "Keindahan", "Kebebasan"],
+                correct: 0
+            },
+            {
+                question: "Warna bendera Indonesia adalah?",
+                answers: ["Merah Putih", "Merah Kuning", "Putih Biru", "Merah Biru"],
+                correct: 0
+            },
+            {
+                question: "Lagu kebangsaan Indonesia adalah?",
+                answers: ["Indonesia Raya", "Hari Merdeka", "Tanah Airku", "Rayuan Pulau Kelapa"],
+                correct: 0
+            },
+            {
+                question: "Siapa pencipta lagu Indonesia Raya?",
+                answers: ["W.R. Supratman", "Ismail Marzuki", "C. Simanjuntak", "Cornel Simanjuntak"],
+                correct: 0
+            },
+            {
+                question: "Apa nama organisasi pemuda yang mengikrarkan Sumpah Pemuda?",
+                answers: ["Jong Java, Jong Sumatera, dll", "Boedi Oetomo", "Indische Partij", "Perhimpunan Indonesia"],
+                correct: 0
+            },
+            {
+                question: "Kapan Sumpah Pemuda dikumandangkan?",
+                answers: ["28 Oktober 1928", "28 Oktober 1927", "20 Mei 1908", "17 Agustus 1945"],
+                correct: 0
+            },
+            {
+                question: "Apa isi Sumpah Pemuda yang pertama?",
+                answers: ["Kami putra dan putri Indonesia mengaku bertanah air satu, tanah air Indonesia", "Kami berbangsa satu", "Kami berbahasa satu", "Kami bersatu"],
+                correct: 0
+            },
+            {
+                question: "Siapa yang memimpin sidang BPUPKI?",
+                answers: ["Dr. Radjiman Wedyodiningrat", "Ir. Soekarno", "Mohammad Hatta", "Mr. Ahmad Soebardjo"],
+                correct: 0
+            },
+            {
+                question: "BPUPKI adalah singkatan dari?",
+                answers: ["Badan Penyelidik Usaha Persiapan Kemerdekaan Indonesia", "Badan Pekerja Untuk Persiapan Kemerdekaan Indonesia", "Badan Pembentuk Undang-Undang Kemerdekaan Indonesia", "Badan Penyusun Konstitusi Indonesia"],
+                correct: 0
+            },
+            {
+                question: "PPKI adalah singkatan dari?",
+                answers: ["Panitia Persiapan Kemerdekaan Indonesia", "Panitia Pembentuk Kemerdekaan Indonesia", "Panitia Penyusun Konstitusi Indonesia", "Panitia Perancang Kemerdekaan Indonesia"],
+                correct: 0
+            },
+            {
+                question: "Siapa yang memimpin PPKI?",
+                answers: ["Ir. Soekarno", "Mohammad Hatta", "Dr. Radjiman Wedyodiningrat", "Mr. Ahmad Soebardjo"],
+                correct: 0
+            },
+            {
+                question: "Apa yang dimaksud dengan demokrasi?",
+                answers: ["Pemerintahan dari rakyat, oleh rakyat, untuk rakyat", "Pemerintahan oleh raja", "Pemerintahan militer", "Pemerintahan agama"],
+                correct: 0
+            },
+            {
+                question: "Sistem pemerintahan Indonesia adalah?",
+                answers: ["Presidensial", "Parlementer", "Monarki", "Federal"],
+                correct: 0
+            },
+            {
+                question: "Lembaga tertinggi negara menurut UUD 1945 adalah?",
+                answers: ["MPR", "DPR", "Presiden", "MA"],
+                correct: 0
+            },
+            {
+                question: "Masa jabatan Presiden Indonesia adalah?",
+                answers: ["5 tahun", "4 tahun", "6 tahun", "7 tahun"],
+                correct: 0
+            },
+            {
+                question: "Presiden dapat menjabat maksimal berapa periode?",
+                answers: ["2 periode", "1 periode", "3 periode", "Tidak terbatas"],
+                correct: 0
+            },
+            {
+                question: "Siapa yang berhak memilih Presiden dan Wakil Presiden?",
+                answers: ["Rakyat secara langsung", "MPR", "DPR", "DPD"],
+                correct: 0
+            },
+            {
+                question: "DPR adalah singkatan dari?",
+                answers: ["Dewan Perwakilan Rakyat", "Dewan Pembuat Rakyat", "Dewan Pengawas Rakyat", "Dewan Pelindung Rakyat"],
+                correct: 0
+            },
+            {
+                question: "Fungsi utama DPR adalah?",
+                answers: ["Legislasi, Anggaran, Pengawasan", "Eksekutif", "Yudikatif", "Administratif"],
+                correct: 0
+            },
+            {
+                question: "MPR adalah singkatan dari?",
+                answers: ["Majelis Permusyawaratan Rakyat", "Majelis Perwakilan Rakyat", "Majelis Pembuat Rakyat", "Majelis Pengawas Rakyat"],
+                correct: 0
+            },
+            {
+                question: "DPD adalah singkatan dari?",
+                answers: ["Dewan Perwakilan Daerah", "Dewan Pembangunan Daerah", "Dewan Pengawas Daerah", "Dewan Pelindung Daerah"],
+                correct: 0
+            },
+            {
+                question: "Mahkamah Agung adalah lembaga?",
+                answers: ["Yudikatif", "Legislatif", "Eksekutif", "Administratif"],
+                correct: 0
+            },
+            {
+                question: "Apa yang dimaksud dengan hak asasi manusia?",
+                answers: ["Hak dasar yang dimiliki setiap manusia sejak lahir", "Hak yang diberikan negara", "Hak yang harus diperjuangkan", "Hak khusus warga negara"],
+                correct: 0
+            },
+            {
+                question: "Contoh hak sipil dan politik adalah?",
+                answers: ["Hak memilih dan dipilih", "Hak mendapat pendidikan", "Hak mendapat pekerjaan", "Hak mendapat kesehatan"],
+                correct: 0
+            },
+            {
+                question: "Apa kewajiban utama warga negara?",
+                answers: ["Mematuhi hukum dan peraturan", "Membayar pajak saja", "Ikut pemilu saja", "Mengikuti pendidikan saja"],
+                correct: 0
+            },
+            {
+                question: "Siapa yang wajib membela negara?",
+                answers: ["Setiap warga negara", "Hanya TNI", "Hanya Polri", "Hanya pemerintah"],
+                correct: 0
+            },
+            {
+                question: "Apa yang dimaksud dengan rule of law?",
+                answers: ["Supremasi hukum", "Kekuasaan raja", "Kekuasaan militer", "Kekuasaan rakyat"],
+                correct: 0
+            },
+            {
+                question: "Lembaga yang berwenang mengubah UUD 1945 adalah?",
+                answers: ["MPR", "DPR", "Presiden", "MA"],
+                correct: 0
+            },
+            {
+                question: "Apa yang dimaksud dengan otonomi daerah?",
+                answers: ["Kewenangan daerah mengurus urusan pemerintahannya sendiri", "Kemerdekaan daerah", "Pemisahan daerah", "Penyerahan semua urusan ke daerah"],
+                correct: 0
+            },
+            {
+                question: "Siapa kepala daerah provinsi?",
+                answers: ["Gubernur", "Bupati", "Walikota", "Camat"],
+                correct: 0
+            },
+            {
+                question: "Siapa kepala daerah kabupaten?",
+                answers: ["Bupati", "Gubernur", "Walikota", "Camat"],
+                correct: 0
+            },
+            {
+                question: "Apa fungsi Komnas HAM?",
+                answers: ["Melindungi dan menegakkan HAM", "Membuat undang-undang", "Mengadili pelanggaran HAM", "Menangkap pelanggar HAM"],
+                correct: 0
+            },
+            {
+                question: "Apa yang dimaksud dengan korupsi?",
+                answers: ["Penyalahgunaan kekuasaan untuk kepentingan pribadi", "Pencurian biasa", "Penipuan", "Perampokan"],
+                correct: 0
+            },
+            {
+                question: "Lembaga yang menangani korupsi adalah?",
+                answers: ["KPK", "Polri", "Kejaksaan", "Pengadilan"],
+                correct: 0
+            },
+            {
+                question: "Apa prinsip utama dalam kehidupan berbangsa dan bernegara?",
+                answers: ["Persatuan dan kesatuan", "Individualisme", "Liberalisme", "Kapitalisme"],
+                correct: 0
+            },
+            {
+                question: "Apa makna dari 'Bhineka Tunggal Ika' dalam kehidupan sehari-hari?",
+                answers: ["Menghargai perbedaan dan tetap bersatu", "Menyamakan semua perbedaan", "Memisahkan yang berbeda", "Mengutamakan satu kelompok"],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara menjaga persatuan dan kesatuan bangsa?",
+                answers: ["Toleransi, gotong royong, dan saling menghormati", "Menyeragamkan semua budaya", "Menghindari perbedaan", "Memisahkan kelompok berbeda"],
+                correct: 0
+            },
+            {
+                question: "Apa peran generasi muda dalam mempertahankan NKRI?",
+                answers: ["Menjaga persatuan, belajar dengan baik, dan berpartisipasi aktif", "Hanya belajar saja", "Hanya bermain saja", "Tidak perlu berbuat apa-apa"],
+                correct: 0
+            }
+        ];
+
+        // Tangga uang (50 level)
+        const moneyLevels = [
+            "Rp 100.000", "Rp 200.000", "Rp 300.000", "Rp 500.000", "Rp 750.000",
+            "Rp 1.000.000", "Rp 1.500.000", "Rp 2.000.000", "Rp 3.000.000", "Rp 5.000.000",
+            "Rp 7.500.000", "Rp 10.000.000", "Rp 15.000.000", "Rp 20.000.000", "Rp 30.000.000",
+            "Rp 50.000.000", "Rp 75.000.000", "Rp 100.000.000", "Rp 150.000.000", "Rp 200.000.000",
+            "Rp 300.000.000", "Rp 500.000.000", "Rp 750.000.000", "Rp 1.000.000.000", "Rp 1.500.000.000",
+            "Rp 2.000.000.000", "Rp 3.000.000.000", "Rp 5.000.000.000", "Rp 7.500.000.000", "Rp 10.000.000.000",
+            "Rp 15.000.000.000", "Rp 20.000.000.000", "Rp 30.000.000.000", "Rp 50.000.000.000", "Rp 75.000.000.000",
+            "Rp 100.000.000.000", "Rp 150.000.000.000", "Rp 200.000.000.000", "Rp 300.000.000.000", "Rp 500.000.000.000",
+            "Rp 750.000.000.000", "Rp 1 Triliun", "Rp 1.5 Triliun", "Rp 2 Triliun", "Rp 3 Triliun",
+            "Rp 5 Triliun", "Rp 7.5 Triliun", "Rp 10 Triliun", "Rp 15 Triliun", "Rp 20 Triliun"
+        ];
+
+        // State permainan
+        let currentQuestion = 0;
+        let selectedAnswer = -1;
+        let gameStarted = false;
+        let lifelines = {
+            fiftyFifty: true,
+            audiencePoll: true,
+            phoneFriend: true
+        };
+
+        // Inisialisasi permainan
+        function initGame() {
+            createMoneyLadder();
+            shuffleQuestions();
+        }
+
+        function createMoneyLadder() {
+            const moneyLevelsContainer = document.getElementById('money-levels');
+            moneyLevelsContainer.innerHTML = '';
+            
+            for (let i = moneyLevels.length - 1; i >= 0; i--) {
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'money-level';
+                levelDiv.innerHTML = `
+                    <span>${i + 1}</span>
+                    <span>${moneyLevels[i]}</span>
+                `;
+                levelDiv.id = `level-${i}`;
+                moneyLevelsContainer.appendChild(levelDiv);
+            }
+        }
+
+        function shuffleQuestions() {
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
+
+        function startGame() {
+            gameStarted = true;
+            currentQuestion = 0;
+            selectedAnswer = -1;
+            
+            // Reset lifelines
+            lifelines = {
+                fiftyFifty: true,
+                audiencePoll: true,
+                phoneFriend: true
+            };
+            
+            document.getElementById('fifty-fifty').disabled = false;
+            document.getElementById('audience-poll').disabled = false;
+            document.getElementById('phone-friend').disabled = false;
+            
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('question-container').classList.add('active');
+            document.getElementById('game-over').classList.remove('show');
+            
+            updateMoneyLadder();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                endGame(true);
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            
+            document.getElementById('question-number').textContent = `Pertanyaan ${currentQuestion + 1} dari 50`;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const answerButtons = document.querySelectorAll('.answer-button');
+            answerButtons.forEach((button, index) => {
+                button.classList.remove('selected', 'correct', 'wrong');
+                button.disabled = false;
+                button.querySelector('span:last-child').textContent = question.answers[index];
+            });
+            
+            selectedAnswer = -1;
+            document.getElementById('final-answer').classList.remove('show');
+        }
+
+        function selectAnswer(index) {
+            selectedAnswer = index;
+            
+            const answerButtons = document.querySelectorAll('.answer-button');
+            answerButtons.forEach((button, i) => {
+                button.classList.remove('selected');
+                if (i === index) {
+                    button.classList.add('selected');
+                }
+            });
+            
+            document.getElementById('final-answer').classList.add('show');
+        }
+
+        function submitAnswer() {
+            if (selectedAnswer === -1) return;
+            
+            const question = questions[currentQuestion];
+            const answerButtons = document.querySelectorAll('.answer-button');
+            
+            // Disable semua tombol
+            answerButtons.forEach(button => button.disabled = true);
+            
+            // Tampilkan jawaban yang benar dan salah
+            answerButtons.forEach((button, index) => {
+                if (index === question.correct) {
+                    button.classList.add('correct');
+                } else if (index === selectedAnswer && selectedAnswer !== question.correct) {
+                    button.classList.add('wrong');
+                }
+            });
+            
+            document.getElementById('final-answer').classList.remove('show');
+            
+            setTimeout(() => {
+                if (selectedAnswer === question.correct) {
+                    // Jawaban benar
+                    updateMoneyLadder();
+                    currentQuestion++;
+                    
+                    if (currentQuestion >= questions.length) {
+                        endGame(true);
+                    } else {
+                        setTimeout(() => {
+                            showQuestion();
+                        }, 1500);
+                    }
+                } else {
+                    // Jawaban salah
+                    endGame(false);
+                }
+            }, 2000);
+        }
+
+        function updateMoneyLadder() {
+            const levels = document.querySelectorAll('.money-level');
+            levels.forEach((level, index) => {
+                level.classList.remove('current', 'completed');
+                if (index === currentQuestion) {
+                    level.classList.add('current');
+                } else if (index < currentQuestion) {
+                    level.classList.add('completed');
+                }
+            });
+        }
+
+        function useFiftyFifty() {
+            if (!lifelines.fiftyFifty) return;
+            
+            lifelines.fiftyFifty = false;
+            document.getElementById('fifty-fifty').disabled = true;
+            
+            const question = questions[currentQuestion];
+            const answerButtons = document.querySelectorAll('.answer-button');
+            const wrongAnswers = [];
+            
+            answerButtons.forEach((button, index) => {
+                if (index !== question.correct) {
+                    wrongAnswers.push(index);
+                }
+            });
+            
+            // Sembunyikan 2 jawaban salah secara acak
+            const toHide = wrongAnswers.sort(() => 0.5 - Math.random()).slice(0, 2);
+            toHide.forEach(index => {
+                answerButtons[index].style.opacity = '0.3';
+                answerButtons[index].disabled = true;
+            });
+        }
+
+        function useAudiencePoll() {
+            if (!lifelines.audiencePoll) return;
+            
+            lifelines.audiencePoll = false;
+            document.getElementById('audience-poll').disabled = true;
+            
+            const question = questions[currentQuestion];
+            const results = [0, 0, 0, 0];
+            
+            // Simulasi polling dengan bias ke jawaban benar
+            results[question.correct] = Math.floor(Math.random() * 30) + 50; // 50-80%
+            let remaining = 100 - results[question.correct];
+            
+            for (let i = 0; i < 4; i++) {
+                if (i !== question.correct) {
+                    if (remaining > 0) {
+                        const share = Math.floor(Math.random() * remaining);
+                        results[i] = share;
+                        remaining -= share;
+                    }
+                }
+            }
+            
+            // Pastikan total 100%
+            results[0] += remaining;
+            
+            alert(`Hasil Polling Penonton:\nA: ${results[0]}%\nB: ${results[1]}%\nC: ${results[2]}%\nD: ${results[3]}%`);
+        }
+
+        function usePhoneFriend() {
+            if (!lifelines.phoneFriend) return;
+            
+            lifelines.phoneFriend = false;
+            document.getElementById('phone-friend').disabled = true;
+            
+            const question = questions[currentQuestion];
+            const answers = ['A', 'B', 'C', 'D'];
+            const correctLetter = answers[question.correct];
+            
+            const friendResponses = [
+                `Saya yakin jawabannya ${correctLetter}!`,
+                `Menurut saya ${correctLetter}, tapi tidak 100% yakin.`,
+                `Hmm, saya rasa ${correctLetter}. Semoga benar!`,
+                `Wah sulit ya... tapi saya pilih ${correctLetter}.`
+            ];
+            
+            const response = friendResponses[Math.floor(Math.random() * friendResponses.length)];
+            alert(`Teman: "${response}"`);
+        }
+
+        function endGame(won) {
+            const finalScore = won ? moneyLevels[moneyLevels.length - 1] : 
+                              (currentQuestion > 0 ? moneyLevels[currentQuestion - 1] : "Rp 0");
+            
+            document.getElementById('question-container').classList.remove('active');
+            document.getElementById('game-over').classList.add('show');
+            document.getElementById('final-score').textContent = finalScore;
+            
+            const message = won ? 
+                "🎉 Selamat! Anda berhasil menjadi millionaire!" :
+                `😔 Sayang sekali! Anda berhasil mencapai ${finalScore}`;
+            
+            document.getElementById('final-message').textContent = message;
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            selectedAnswer = -1;
+            gameStarted = false;
+            
+            // Reset tampilan
+            document.getElementById('start-screen').style.display = 'block';
+            document.getElementById('question-container').classList.remove('active');
+            document.getElementById('game-over').classList.remove('show');
+            
+            // Reset money ladder
+            const levels = document.querySelectorAll('.money-level');
+            levels.forEach(level => {
+                level.classList.remove('current', 'completed');
+            });
+            
+            // Shuffle questions lagi
+            shuffleQuestions();
+        }
+
+        // Fungsi render untuk Elements SDK
+        async function render(config) {
+            document.getElementById('quiz-title').textContent = config.quiz_title || defaultConfig.quiz_title;
+            document.getElementById('host-name').textContent = config.host_name || defaultConfig.host_name;
+            document.getElementById('welcome-message').textContent = config.welcome_message || defaultConfig.welcome_message;
+        }
+
+        // Inisialisasi Elements SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig: defaultConfig,
+                render: render,
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["quiz_title", config.quiz_title || defaultConfig.quiz_title],
+                    ["host_name", config.host_name || defaultConfig.host_name],
+                    ["welcome_message", config.welcome_message || defaultConfig.welcome_message]
+                ])
+            });
+        }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            initGame();
+            render(defaultConfig);
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f6cec942d4c26b',t:'MTc2MDYwOTg2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
