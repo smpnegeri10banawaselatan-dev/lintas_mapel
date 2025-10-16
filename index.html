@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kuis Millionaire PKN SMP</title>
+  <title>SMPN 10 BANAWA SELATAN</title>
   <script src="/_sdk/element_sdk.js"></script>
   <style>
         body {
@@ -325,6 +326,90 @@
             cursor: not-allowed;
         }
 
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: firework 1s ease-out forwards;
+        }
+
+        @keyframes firework {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(20);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateX(0);
+            }
+            25% {
+                transform: translate(-50%, -50%) translateX(-10px);
+            }
+            75% {
+                transform: translate(-50%, -50%) translateX(10px);
+            }
+        }
+
+        .celebration-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .wrong-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
+            text-align: center;
+            max-width: 400px;
+        }
+
         @media (max-width: 768px) {
             .game-area {
                 flex-direction: column;
@@ -342,6 +427,13 @@
                 order: -1;
                 max-height: 200px;
                 overflow-y: auto;
+            }
+
+            .celebration-message,
+            .wrong-message {
+                font-size: 1.2rem;
+                padding: 15px 30px;
+                max-width: 300px;
             }
         }
     </style>
@@ -384,6 +476,13 @@
       </div>
       <p id="final-message"></p><button class="restart-button" onclick="restartGame()">MAIN LAGI</button>
      </div>
+    </div><!-- Elemen untuk animasi dan pesan -->
+    <div class="fireworks" id="fireworks"></div>
+    <div class="celebration-message" id="celebration-message">
+     🎉 JAWABAN BENAR! 🎉
+    </div>
+    <div class="wrong-message" id="wrong-message">
+     ❌ Jawaban Salah!<br><small>Silahkan anda kembali mempelajari materi PKN</small>
     </div>
     <aside class="money-ladder">
      <h3>💰 Tangga Uang</h3>
@@ -687,7 +786,8 @@
             const moneyLevelsContainer = document.getElementById('money-levels');
             moneyLevelsContainer.innerHTML = '';
             
-            for (let i = moneyLevels.length - 1; i >= 0; i--) {
+            // Buat dari bawah ke atas (level 1 di bawah, level 50 di atas)
+            for (let i = 0; i < moneyLevels.length; i++) {
                 const levelDiv = document.createElement('div');
                 levelDiv.className = 'money-level';
                 levelDiv.innerHTML = `
@@ -788,20 +888,27 @@
             
             setTimeout(() => {
                 if (selectedAnswer === question.correct) {
-                    // Jawaban benar
+                    // Jawaban benar - tampilkan animasi dan suara
+                    createFireworks();
+                    playApplauseSound();
                     updateMoneyLadder();
                     currentQuestion++;
                     
                     if (currentQuestion >= questions.length) {
-                        endGame(true);
+                        setTimeout(() => {
+                            endGame(true);
+                        }, 2500);
                     } else {
                         setTimeout(() => {
                             showQuestion();
-                        }, 1500);
+                        }, 3000);
                     }
                 } else {
-                    // Jawaban salah
-                    endGame(false);
+                    // Jawaban salah - tampilkan pesan
+                    showWrongMessage();
+                    setTimeout(() => {
+                        endGame(false);
+                    }, 3500);
                 }
             }, 2000);
         }
@@ -816,6 +923,54 @@
                     level.classList.add('completed');
                 }
             });
+        }
+
+        function createFireworks() {
+            const fireworksContainer = document.getElementById('fireworks');
+            fireworksContainer.innerHTML = '';
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    fireworksContainer.appendChild(firework);
+                    
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 1000);
+                }, i * 100);
+            }
+        }
+
+        function playApplauseSound() {
+            // Simulasi suara tepuk tangan dengan getaran visual
+            const celebration = document.getElementById('celebration-message');
+            celebration.style.display = 'block';
+            celebration.style.animation = 'none';
+            celebration.offsetHeight; // Trigger reflow
+            celebration.style.animation = 'pulse 0.5s ease-in-out 3';
+            
+            setTimeout(() => {
+                celebration.style.display = 'none';
+            }, 2000);
+        }
+
+        function showWrongMessage() {
+            const wrongMsg = document.getElementById('wrong-message');
+            wrongMsg.style.display = 'block';
+            wrongMsg.style.animation = 'none';
+            wrongMsg.offsetHeight; // Trigger reflow
+            wrongMsg.style.animation = 'shake 0.5s ease-in-out 2';
+            
+            setTimeout(() => {
+                wrongMsg.style.display = 'none';
+            }, 3000);
         }
 
         function useFiftyFifty() {
@@ -959,5 +1114,5 @@
             render(defaultConfig);
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f6cec942d4c26b',t:'MTc2MDYwOTg2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f6d78ae1899ccb',t:'MTc2MDYxMDIxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
